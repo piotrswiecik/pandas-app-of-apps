@@ -1,10 +1,17 @@
+def frontendImage = "capricornpl/pandas-frontend"
+def backendImage = "capricornpl/pandas-backend"
+def dockerRegistry = ""
+def registryCredentials = "dockerhub"
+def backendDockerTag
+def frontendDockerTag
+
 pipeline {
     agent {
         label "agent"
     }
 
     tools {
-        terraform 'terraform'
+        terraform 'Terraform'
     }
 
     parameters {
@@ -25,9 +32,6 @@ pipeline {
             }
         }
 
-        def backendDockerTag
-        def frontendDockerTag
-
         stage('adjust version') {
             steps {
                 script {
@@ -38,11 +42,6 @@ pipeline {
             }
         }
 
-        def frontendImage = "capricornpl/pandas-frontend"
-        def backendImage = "capricornpl/pandas-backend"
-        def dockerRegistry = ""
-        def registryCredentials = "dockerhub"
-
         stage('deploy') {
             steps {
                 script {
@@ -50,11 +49,18 @@ pipeline {
                         "FRONTEND_IMAGE=$frontendImage:$frontendDockerTag",
                         "BACKEND_IMAGE=$backendImage:$backendDockerTag"
                     ]) {
-                        docker.withRegistry("$$dockerRegistry", "$registryCredentials") {
+                        docker.withRegistry("$dockerRegistry", "$registryCredentials") {
                             sh "docker-compose up -d"
                         }
                     }
                 }
+            }
+        }
+
+        stage('selenium') {
+            steps {
+                sh "pip3 install -r test/selenium/requirements.txt"
+                sh "pip3 install -r test/selenium/frontendTest.py"
             }
         }
 

@@ -13,4 +13,4 @@ services:
     image: ${BACKEND_IMAGE}
     container_name: backend
     ports:
-      - "5001:5001"
+      - "5001:5001"

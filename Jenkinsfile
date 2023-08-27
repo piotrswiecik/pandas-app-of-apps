@@ -89,10 +89,10 @@ pipeline {
         }
         
     }
-    // post {
-    //         always {
-    //             sh "docker-compose down"
-    //             cleanWs()
-    //         }
-    //     }
+    post {
+            always {
+                sh "docker-compose down"
+                cleanWs()
+            }
+        }
 }
